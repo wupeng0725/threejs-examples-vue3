@@ -1,13 +1,13 @@
 {
   "name": "threejs-examples",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy:github": "gh-pages -d docs -b gh-pages -r https://github.com/wupeng0725/threejs-examples-vue3.git"
+    "deploy:github": "gh-pages -d docs -b gh-pages"
   },
   "dependencies": {
     "three": "^0.175.0",
