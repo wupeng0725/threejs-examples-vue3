@@ -1,0 +1,21 @@
+{
+  "name": "threejs-examples",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy:github": "gh-pages -d docs -b gh-pages -r https://github.com/wupeng0725/threejs-examples-vue3.git"
+  },
+  "dependencies": {
+    "three": "^0.175.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "gh-pages": "^6.3.0",
+    "vite": "^6.2.0"
+  }
+}
