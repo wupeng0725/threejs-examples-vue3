@@ -2,7 +2,15 @@
 	<div id="wrapper">
 		<Panel @componentChange="selectViewer" />
 		<div id="viewer">
-			<component v-if="currentComponent" :is="components[currentComponent]" />
+			<Suspense v-if="currentComponent">
+				<!-- 具有深层异步依赖的组件 -->
+				<component :is="components[currentComponent]" />
+				<!-- 在 #fallback 插槽中显示 “正在加载中” -->
+				<template #fallback>
+					Loading...
+				</template>
+			</Suspense>
+
 			<Empty v-else />
 		</div>
 	</div>
