@@ -1,7 +1,13 @@
 <template>
   <div id="panel">
-    <span class="title">Threejs 样例</span>
-    <div class="panel-item" :class="item.value === currentPanel && 'selected'" v-for="(item, index) in panelList" :key="item.value" @click="onClickPanel(item)">
+    <div class="panel-header">
+      <span class="title">Threejs 样例</span>
+      <a href="https://github.com/wupeng0725/threejs-examples-vue3" target="_blank" title="Github源码">
+        <img src="/github.svg" alt="Github源码">
+      </a>
+    </div>
+    <div class="panel-item" :class="item.value === currentPanel && 'selected'" v-for="(item, index) in panelList"
+      :key="item.value" @click="onClickPanel(item)">
       {{ index + 1 }} - {{ item.title }}
     </div>
   </div>
@@ -36,7 +42,7 @@ const currentPanel = ref('')
 const onClickPanel = (item) => {
   if (item.type === 'demo') {
     currentPanel.value = item.value
-    emit('componentChange', item.value)
+    emit('componentChange', item)
   } else {
     jumpGitHub(item.value)
   }
@@ -60,12 +66,24 @@ const jumpGitHub = (path) => {
   flex-direction: column;
 }
 
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #ccc;
+}
+
 .title {
   padding: 20px;
   color: aqua;
   font-size: 30px;
   font-weight: 700;
-  border-bottom: 2px solid #ccc;
+}
+a {
+  padding-right: 10px;
+  img {
+    width: 30px;
+  }
 }
 
 @mixin panel-item {

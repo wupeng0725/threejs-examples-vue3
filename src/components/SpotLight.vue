@@ -3,13 +3,13 @@
 </template>
 
 <script setup>
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 // 导入threejs
 import * as THREE from 'three'
 // 导入轨道控制器
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 // 导入lil.gui
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { onMounted, onBeforeUnmount, ref } from 'vue'
 
 const containerRef = ref(null)
 
@@ -185,18 +185,4 @@ onBeforeUnmount(() => {
 
 </script>
 
-<style>
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-#container {
-  position: absolute;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-}
-</style>
+<style></style>
