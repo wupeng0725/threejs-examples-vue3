@@ -18,11 +18,14 @@
 
 <script setup>
 import { defineAsyncComponent, reactive, ref } from 'vue'
-import Panel from './components/Panel.vue'
+import Panel from './components/Panel/Panel.vue'
 import Empty from './components/Empty.vue'
-const PointLight = defineAsyncComponent(() => import('./components/PointLight.vue'))
-const SpotLight = defineAsyncComponent(() => import('./components/SpotLight.vue'))
 import CodeModel from './components/CodeModel.vue'
+const PointLight = defineAsyncComponent(() => import('./views/PointLight.vue'))
+const SpotLight = defineAsyncComponent(() => import('./views/SpotLight.vue'))
+const ThreeBox = defineAsyncComponent(() => import('./views/ThreeBox.vue'))
+const PrimitivesGeometry = defineAsyncComponent(() => import('./views/PrimitivesGeometry.vue'))
+
 import { getComponentCode } from './utils/index.js'
 
 // 模态框数据
@@ -33,7 +36,9 @@ const modelData = reactive({
 
 const components = {
 	PointLight,
-	SpotLight
+	SpotLight,
+	ThreeBox,
+	PrimitivesGeometry
 }
 
 const currentComponent = ref('')

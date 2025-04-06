@@ -14,28 +14,10 @@
 </template>
 
 <script setup>
-
+import { panelList } from './panel'
 import { ref } from 'vue'
 
 const emit = defineEmits(['componentChange'])
-
-const panelList = [
-  {
-    title: '点光源',
-    value: 'PointLight',
-    type: 'demo'
-  },
-  {
-    title: '聚光灯',
-    value: 'SpotLight',
-    type: 'demo'
-  },
-  {
-    title: '3D圣诞贺卡',
-    value: 'christmas-card',
-    type: 'link'
-  }
-]
 
 const currentPanel = ref('')
 
