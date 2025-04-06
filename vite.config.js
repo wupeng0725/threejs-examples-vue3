@@ -4,7 +4,10 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), visualizer({ open: true })],
+  plugins: [
+    vue(),
+    visualizer({ open: true }),
+  ],
   base: process.env.NODE_ENV === 'production' ? '/threejs-examples-vue3/' : '/',
   build: {
     outDir: 'docs', // 使用 GitHub Pages默认识别目录
@@ -16,10 +19,11 @@ export default defineConfig({
         assetFileNames: 'static/[ext]/[name]-[hash].[ext]', // 资源文件像 字体，图片等
         manualChunks: {
           three: ['three'],
-          highlight: ['highlight.js', '@highlightjs/vue-plugin']
+          highlight: ['highlight.js', '@highlightjs/vue-plugin'],
+          // OrbitControls: ['three/examples/jsm/controls/OrbitControls'],
         },
         // 合并小chunk
-        experimentalMinChunkSize: 10 * 1024, // 单位b
+        experimentalMinChunkSize: 15 * 1024, // 单位b
       },
     },
   },

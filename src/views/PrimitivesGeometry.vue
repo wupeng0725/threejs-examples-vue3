@@ -9,6 +9,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
+import { withBase } from '../utils/index'
 
 const canvasRef = ref(null)
 
@@ -267,7 +268,7 @@ function main() {
 
     async function doit() {
 
-      const font = await loadFont('/fonts/helvetiker_regular.typeface.json')
+      const font = await loadFont(withBase('/fonts/helvetiker_regular.typeface.json'))
       const geometry = new TextGeometry('three.js', {
         font: font,
         size: 3.0,
