@@ -1,5 +1,5 @@
 <template>
-  <div id="panel">
+  <div id="panel" v-if="panelShow">
     <div class="panel-header">
       <span class="title">Threejs 样例</span>
       <a href="https://github.com/wupeng0725/threejs-examples-vue3" target="_blank" title="Github源码">
@@ -10,6 +10,8 @@
       :key="item.value" @click="onClickPanel(item)">
       {{ index + 1 }} - {{ item.title }}
     </div>
+    <!-- 收起/展开 -->
+    <!-- <div class="panel-tool" @click="onToggle"><</div> -->
   </div>
 </template>
 
@@ -33,6 +35,11 @@ const onClickPanel = (item) => {
 const jumpGitHub = (path) => {
   window.open(`https://wupeng0725.github.io/${path}/`, '_blank')
 }
+
+const panelShow = ref(true)
+// const onToggle = () => {
+//   panelShow.value = !panelShow.value
+// }
 </script>
 
 <style lang="scss" scoped>
@@ -84,6 +91,27 @@ a {
 
   &.selected {
     @include panel-item;
+  }
+}
+
+#panel:hover .panel-tool {
+  display: flex;
+}
+.panel-tool {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  height: 100px;
+  background-color: #ccc;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  cursor: pointer;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  transition: all 0.3s;
+  &:hover {
+    background-color: #aaa;
   }
 }
 </style>

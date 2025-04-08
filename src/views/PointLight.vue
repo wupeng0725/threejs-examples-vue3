@@ -147,7 +147,7 @@ const handleResize = () => {
 // 清理资源
 const cleanUp = () => {
   containerRef.value.removeChild(renderer.domElement)
-  gui?.destroy()
+  gui.destroy() // 销毁GUI实例
   // 1. 停止动画循环
   if (animationId) cancelAnimationFrame(animationId)
 

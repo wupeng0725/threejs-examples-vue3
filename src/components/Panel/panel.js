@@ -10,6 +10,21 @@ export const panelList = [
     type: 'demo'
   },
   {
+    title: '轨道控制器',
+    value: 'OrbitControls',
+    type: 'demo'
+  },
+  {
+    title: 'lil-gui调试器',
+    value: 'GUI',
+    type: 'demo'
+  },
+  {
+    title: '纹理贴图',
+    value: 'Texture',
+    type: 'demo'
+  },
+  {
     title: '点光源',
     value: 'PointLight',
     type: 'demo'

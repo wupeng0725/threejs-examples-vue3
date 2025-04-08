@@ -24,7 +24,10 @@ import CodeModel from './components/CodeModel.vue'
 const PointLight = defineAsyncComponent(() => import('./views/PointLight.vue'))
 const SpotLight = defineAsyncComponent(() => import('./views/SpotLight.vue'))
 const ThreeBox = defineAsyncComponent(() => import('./views/ThreeBox.vue'))
+const OrbitControls = defineAsyncComponent(() => import('./views/OrbitControls.vue'))
 const PrimitivesGeometry = defineAsyncComponent(() => import('./views/PrimitivesGeometry.vue'))
+const GUI = defineAsyncComponent(() => import('./views/GUI.vue'))
+const Texture = defineAsyncComponent(() => import('./views/Texture.vue'))
 
 import { getComponentCode } from './utils/index.js'
 
@@ -38,7 +41,10 @@ const components = {
 	PointLight,
 	SpotLight,
 	ThreeBox,
-	PrimitivesGeometry
+	PrimitivesGeometry,
+	OrbitControls,
+	GUI,
+	Texture
 }
 
 const currentComponent = ref('')
