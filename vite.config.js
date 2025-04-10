@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,6 +10,12 @@ export default defineConfig({
     visualizer({ open: true }),
   ],
   base: process.env.NODE_ENV === 'production' ? '/threejs-examples-vue3/' : '/',
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, 'src'), // 路径别名
+    },
+    extensions: ['.js', '.json', '.ts'] // 使用路径别名时想要省略的后缀名，可以自己 增减
+  },
   build: {
     outDir: 'docs', // 使用 GitHub Pages默认识别目录
     rollupOptions: {

@@ -9,7 +9,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
-import { withBase } from '../utils/index'
+import { withBase } from '@/utils'
 
 const canvasRef = ref(null)
 
@@ -354,6 +354,20 @@ function main() {
     const depth = 8
     addLineGeometry(1, - 2, new THREE.WireframeGeometry(new THREE.BoxGeometry(width, height, depth)))
   }
+  {
+    // 点材质
+    const radius = 7
+    const widthSegments = 12
+    const heightSegments = 8
+    const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments)
+    const material = new THREE.PointsMaterial({
+      color: 'red',
+      size: 3,     // in world units
+      sizeAttenuation: false // 指定点的大小是否因相机深度而衰减。
+    })
+    const points = new THREE.Points(geometry, material)
+    addObject(0, -2, points)
+  }
 }
 
 /**
@@ -405,6 +419,9 @@ const cleanUp = () => {
   if (animationId) cancelAnimationFrame(animationId)
 
   // 2. 释放Three.js资源
+  for (const cube of objects) {
+    scene.remove(cube)
+  }
   scene.traverse(child => {
     if (child.isMesh) {
       child.geometry.dispose()

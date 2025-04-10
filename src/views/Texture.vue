@@ -12,12 +12,122 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 // 导入hdr加载器
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { withBase } from '../utils'
+import { getTexture } from '@/utils/textureLoader'
 
 const canvasRef = ref(null)
 
 let renderer = null, camera = null, scene = null, animationId = null,
-  controls = null, gui = null, rgbeLoader = null
+  controls = null, gui = null
+
+// 释放资源
+class ResourceTracker {
+
+  constructor() {
+
+    this.resources = new Set()
+
+  }
+  track(resource) {
+
+    if (!resource) {
+
+      return resource
+
+    }
+
+    // handle children and when material is an array of materials or
+    // uniform is array of textures
+    if (Array.isArray(resource)) {
+
+      resource.forEach(resource => this.track(resource))
+      return resource
+
+    }
+
+    if (resource.dispose || resource instanceof THREE.Object3D) {
+
+      this.resources.add(resource)
+
+    }
+
+    if (resource instanceof THREE.Object3D) {
+
+      this.track(resource.geometry)
+      this.track(resource.material)
+      this.track(resource.children)
+
+    } else if (resource instanceof THREE.Material) {
+
+      // We have to check if there are any textures on the material
+      for (const value of Object.values(resource)) {
+
+        if (value instanceof THREE.Texture) {
+
+          this.track(value)
+
+        }
+
+      }
+
+      // We also have to check if any uniforms reference textures or arrays of textures
+      if (resource.uniforms) {
+
+        for (const value of Object.values(resource.uniforms)) {
+
+          if (value) {
+
+            const uniformValue = value.value
+            if (uniformValue instanceof THREE.Texture ||
+              Array.isArray(uniformValue)) {
+
+              this.track(uniformValue)
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+    return resource
+
+  }
+  untrack(resource) {
+
+    this.resources.delete(resource)
+
+  }
+  dispose() {
+
+    for (const resource of this.resources) {
+
+      if (resource instanceof THREE.Object3D) {
+
+        if (resource.parent) {
+
+          resource.parent.remove(resource)
+
+        }
+
+      }
+
+      if (resource.dispose) {
+
+        resource.dispose()
+
+      }
+
+    }
+
+    this.resources.clear()
+
+  }
+
+}
+const resTracker = new ResourceTracker()
 
 function main() {
   // 添加渲染器
@@ -38,22 +148,28 @@ function main() {
     scene.add(axesHelper) // 添加坐标轴辅助器
   }
   {
+    const track = resTracker.track.bind(resTracker)
+
     // 创建纹理加载器
-    const textureLoader = new THREE.TextureLoader()
+    // const textureLoader = new THREE.TextureLoader()
     // 加载纹理图片
-    const texture = textureLoader.load(withBase('/texture/door/color.jpg'))
+    // const texture = track(textureLoader.load(withBase('/texture/door/color.jpg')))
+    const texture = track(getTexture('/texture/door/color.jpg'))
     texture.colorSpace = THREE.SRGBColorSpace // 设置颜色空间为sRGB
     // 加载ao贴图
-    const aoMap = textureLoader.load(withBase('/texture/door/ambientOcclusion.jpg'))
+    // const aoMap = track(textureLoader.load(withBase('/texture/door/ambientOcclusion.jpg')))
+    const aoMap = track(getTexture('/texture/door/ambientOcclusion.jpg'))
     // 加载透明度贴图
-    const alphaMap = textureLoader.load(withBase('/texture/door/alpha.jpg'))
+    // const alphaMap = track(textureLoader.load(withBase('/texture/door/alpha.jpg')))
+    const alphaMap = track(getTexture('/texture/door/alpha.jpg'))
     // 加载光照贴图
-    // const lightMap = textureLoader.load(withBase('/texture/colors.png'))
+    // const lightMap = track(textureLoader.load(withBase('/texture/colors.png')))
     // 加载高光贴图
-    const specularMap = textureLoader.load(withBase('/texture/door/specular.jpg'))
+    // const specularMap = track(textureLoader.load(withBase('/texture/door/specular.jpg')))
+    const specularMap = track(getTexture('/texture/door/specular.jpg'))
 
-    const plane = new THREE.PlaneGeometry(1, 1)
-    const material = new THREE.MeshBasicMaterial({
+    const plane = track(new THREE.PlaneGeometry(1, 1))
+    const material = track(new THREE.MeshBasicMaterial({
       color: 0xffffff,
       map: texture, // 设置纹理贴图
       aoMap: aoMap, // 设置ao贴图
@@ -64,23 +180,33 @@ function main() {
       // lightMapIntensity: 1, // 设置光照贴图强度
       specularMap: specularMap, // 设置高光贴图
       reflectivity: 1, // 环境贴图对表面的影响程度
-    })
-    const mesh = new THREE.Mesh(plane, material)
+    }))
+    const mesh = track(new THREE.Mesh(plane, material))
     scene.add(mesh)
 
     // RGBELoader 加载hdr贴图
-    rgbeLoader = new RGBELoader()
-    rgbeLoader.load(withBase('/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr'), (envMap) => {
-      // 设置球形映射
-      envMap.mapping = THREE.EquirectangularReflectionMapping
-      // 设置背景贴图
-      scene.background = envMap
-      // 设置环境贴图-若该值不为null，则该纹理贴图将会被设为场景中所有物理材质的环境贴图
-      // 可以模拟环境光
-      scene.environment = envMap
-      // 设置plane的环境贴图
-      material.envMap = envMap
-    })
+    const rgbeLoader = new RGBELoader()
+    // track(rgbeLoader.load(withBase('/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr'), (envMap) => {
+    //   // 设置球形映射
+    //   envMap.mapping = THREE.EquirectangularReflectionMapping
+    //   // 设置背景贴图
+    //   scene.background = envMap
+    //   // 设置环境贴图-若该值不为null，则该纹理贴图将会被设为场景中所有物理材质的环境贴图
+    //   // 可以模拟环境光
+    //   scene.environment = envMap
+    //   // 设置plane的环境贴图
+    //   material.envMap = envMap
+    // }))
+    const envMap = track(getTexture('/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr'))
+    // 设置球形映射
+    envMap.mapping = THREE.EquirectangularReflectionMapping
+    // 设置背景贴图
+    scene.background = envMap
+    // 设置环境贴图-若该值不为null，则该纹理贴图将会被设为场景中所有物理材质的环境贴图
+    // 可以模拟环境光
+    scene.environment = envMap
+    // 设置plane的环境贴图
+    material.envMap = envMap
 
     gui = new GUI()
     gui.add(material, 'aoMapIntensity').min(0).max(1).name('ao贴图强度')
@@ -124,13 +250,14 @@ const cleanUp = () => {
   if (animationId) cancelAnimationFrame(animationId)
 
   // 2. 释放Three.js资源
-  scene.traverse(child => {
-    if (child.isMesh) {
-      child.geometry.dispose()
-      child.material.dispose()
-      // texture.dispose()   // 释放纹理（如果有）
-    }
-  })
+  resTracker.dispose() // 释放资源
+  // scene.traverse(child => {
+  //   if (child.isMesh) {
+  //     child.geometry.dispose()
+  //     child.material.dispose()
+  //     // texture.dispose()   // 释放纹理（如果有）
+  //   }
+  // })
 
   // 3. 销毁渲染器
   renderer.dispose()

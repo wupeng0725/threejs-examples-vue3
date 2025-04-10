@@ -29,7 +29,18 @@ const PrimitivesGeometry = defineAsyncComponent(() => import('./views/Primitives
 const GUI = defineAsyncComponent(() => import('./views/GUI.vue'))
 const Texture = defineAsyncComponent(() => import('./views/Texture.vue'))
 
-import { getComponentCode } from './utils/index.js'
+import { getComponentCode } from '@/utils'
+import { preloadTextures } from '@/utils/textureLoader'
+
+const texturesToPreload = [
+	'/texture/door/color.jpg',
+	'/texture/door/ambientOcclusion.jpg',
+	'/texture/door/alpha.jpg',
+	'/texture/door/specular.jpg',
+	'/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr',
+]
+preloadTextures(texturesToPreload)
+	.catch(err => console.error('Texture preload failed:', err))
 
 // 模态框数据
 const modelData = reactive({
@@ -50,7 +61,7 @@ const components = {
 const currentComponent = ref('')
 
 const selectViewer = async ({ value, title }) => {
-	console.log(value);
+	console.log(value)
 	currentComponent.value = value
 	modelData.code = await getComponentCode(value)
 	modelData.title = title
