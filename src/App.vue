@@ -37,7 +37,6 @@ const texturesToPreload = [
 	'/texture/door/ambientOcclusion.jpg',
 	'/texture/door/alpha.jpg',
 	'/texture/door/specular.jpg',
-	'/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr',
 ]
 preloadTextures(texturesToPreload)
 	.catch(err => console.error('Texture preload failed:', err))

@@ -13,6 +13,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { getTexture } from '@/utils/textureLoader'
+import { withBase } from '@/utils'
 
 const canvasRef = ref(null)
 
@@ -186,27 +187,17 @@ function main() {
 
     // RGBELoader 加载hdr贴图
     const rgbeLoader = new RGBELoader()
-    // track(rgbeLoader.load(withBase('/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr'), (envMap) => {
-    //   // 设置球形映射
-    //   envMap.mapping = THREE.EquirectangularReflectionMapping
-    //   // 设置背景贴图
-    //   scene.background = envMap
-    //   // 设置环境贴图-若该值不为null，则该纹理贴图将会被设为场景中所有物理材质的环境贴图
-    //   // 可以模拟环境光
-    //   scene.environment = envMap
-    //   // 设置plane的环境贴图
-    //   material.envMap = envMap
-    // }))
-    const envMap = track(getTexture('/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr'))
-    // 设置球形映射
-    envMap.mapping = THREE.EquirectangularReflectionMapping
-    // 设置背景贴图
-    scene.background = envMap
-    // 设置环境贴图-若该值不为null，则该纹理贴图将会被设为场景中所有物理材质的环境贴图
-    // 可以模拟环境光
-    scene.environment = envMap
-    // 设置plane的环境贴图
-    material.envMap = envMap
+    track(rgbeLoader.load(withBase('/texture/Alex_Hart-Nature_Lab_Bones_2k.hdr'), (envMap) => {
+      // 设置球形映射
+      envMap.mapping = THREE.EquirectangularReflectionMapping
+      // 设置背景贴图
+      scene.background = envMap
+      // 设置环境贴图-若该值不为null，则该纹理贴图将会被设为场景中所有物理材质的环境贴图
+      // 可以模拟环境光
+      scene.environment = envMap
+      // 设置plane的环境贴图
+      material.envMap = envMap
+    }))
 
     gui = new GUI()
     gui.add(material, 'aoMapIntensity').min(0).max(1).name('ao贴图强度')
