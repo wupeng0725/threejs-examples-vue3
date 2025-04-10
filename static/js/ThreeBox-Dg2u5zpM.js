@@ -165,7 +165,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'\r
 import { FontLoader } from 'three/addons/loaders/FontLoader.js'\r
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'\r
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'\r
-import { withBase } from '../utils/index'\r
+import { withBase } from '@/utils'\r
 \r
 const canvasRef = ref(null)\r
 \r
@@ -510,6 +510,20 @@ function main() {\r
     const depth = 8\r
     addLineGeometry(1, - 2, new THREE.WireframeGeometry(new THREE.BoxGeometry(width, height, depth)))\r
   }\r
+  {\r
+    // 点材质\r
+    const radius = 7\r
+    const widthSegments = 12\r
+    const heightSegments = 8\r
+    const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments)\r
+    const material = new THREE.PointsMaterial({\r
+      color: 'red',\r
+      size: 3,     // in world units\r
+      sizeAttenuation: false // 指定点的大小是否因相机深度而衰减。\r
+    })\r
+    const points = new THREE.Points(geometry, material)\r
+    addObject(0, -2, points)\r
+  }\r
 }\r
 \r
 /**\r
@@ -561,6 +575,9 @@ const cleanUp = () => {\r
   if (animationId) cancelAnimationFrame(animationId)\r
 \r
   // 2. 释放Three.js资源\r
+  for (const cube of objects) {\r
+    scene.remove(cube)\r
+  }\r
   scene.traverse(child => {\r
     if (child.isMesh) {\r
       child.geometry.dispose()\r
@@ -592,7 +609,7 @@ onBeforeUnmount(() => {\r
 })\r
 <\/script>\r
 \r
-<style lang="scss" scoped></style>`,a=Object.freeze(Object.defineProperty({__proto__:null,default:r},Symbol.toStringTag,{value:"Module"})),e=`<template>\r
+<style lang="scss" scoped></style>`,o=Object.freeze(Object.defineProperty({__proto__:null,default:r},Symbol.toStringTag,{value:"Module"})),e=`<template>\r
   <canvas ref="canvasRef"></canvas>\r
 </template>\r
 \r
@@ -743,4 +760,4 @@ onBeforeUnmount(() => {\r
 })\r
 <\/script>\r
 \r
-<style lang="scss" scoped></style>`,o=Object.freeze(Object.defineProperty({__proto__:null,default:e},Symbol.toStringTag,{value:"Module"}));export{t as G,a as P,o as T};
+<style lang="scss" scoped></style>`,a=Object.freeze(Object.defineProperty({__proto__:null,default:e},Symbol.toStringTag,{value:"Module"}));export{t as G,o as P,a as T};
