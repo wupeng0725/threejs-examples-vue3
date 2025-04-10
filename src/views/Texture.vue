@@ -1,5 +1,6 @@
 <template>
   <canvas ref="canvasRef"></canvas>
+  <div v-if="isHDRLoaded" class="loading-text">HDR贴图加载较为缓慢，请稍等片刻</div>
 </template>
 
 <script setup>
@@ -16,6 +17,7 @@ import { getTexture } from '@/utils/textureLoader'
 import { withBase } from '@/utils'
 
 const canvasRef = ref(null)
+const isHDRLoaded = ref(true)
 
 let renderer = null, camera = null, scene = null, animationId = null,
   controls = null, gui = null
@@ -197,6 +199,7 @@ function main() {
       scene.environment = envMap
       // 设置plane的环境贴图
       material.envMap = envMap
+      isHDRLoaded.value = false // hdr贴图加载完成
     }))
 
     gui = new GUI()
@@ -288,4 +291,13 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.loading-text {
+  position: fixed;
+  top: 0;
+  font-size: 20px;
+  color: #fff;
+  text-align: center;
+  z-index: 9998; /* 确保文本在其他元素之上 */
+}
+</style>
