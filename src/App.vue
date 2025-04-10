@@ -28,6 +28,8 @@ const OrbitControls = defineAsyncComponent(() => import('./views/OrbitControls.v
 const PrimitivesGeometry = defineAsyncComponent(() => import('./views/PrimitivesGeometry.vue'))
 const GUI = defineAsyncComponent(() => import('./views/GUI.vue'))
 const Texture = defineAsyncComponent(() => import('./views/Texture.vue'))
+const GltfLoaderBox = defineAsyncComponent(() => import('./views/GltfLoaderBox.vue'))
+const RaycasterBox = defineAsyncComponent(() => import('./views/RaycasterBox.vue'))
 
 import { getComponentCode } from '@/utils'
 import { preloadTextures } from '@/utils/textureLoader'
@@ -54,7 +56,9 @@ const components = {
 	PrimitivesGeometry,
 	OrbitControls,
 	GUI,
-	Texture
+	Texture,
+	GltfLoaderBox,
+	RaycasterBox
 }
 
 const currentComponent = ref('')

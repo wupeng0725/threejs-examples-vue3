@@ -25,6 +25,16 @@ export const panelList = [
     type: 'demo'
   },
   {
+    title: 'GLTFLoader',
+    value: 'GltfLoaderBox',
+    type: 'demo'
+  },
+  {
+    title: '光线投射',
+    value: 'RaycasterBox',
+    type: 'demo'
+  },
+  {
     title: '点光源',
     value: 'PointLight',
     type: 'demo'

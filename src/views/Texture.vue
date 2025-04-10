@@ -298,6 +298,7 @@ onBeforeUnmount(() => {
   font-size: 20px;
   color: #fff;
   text-align: center;
-  z-index: 9998; /* 确保文本在其他元素之上 */
+  z-index: 9998;
+  /* 确保文本在其他元素之上 */
 }
 </style>
