@@ -378,11 +378,11 @@ function main() {\r
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far)\r
   // 摄像机默认指向Z轴负方向，上方向朝向Y轴正方向。\r
   // 我们将会把立方体放置在坐标原点，所以我们需要往后移一下摄像机才能显示出物体。\r
-  camera.position.z = 3\r
+  camera.position.z = 30\r
 \r
   // 创建场景，需要three.js绘制的东西都需要加入到scene中\r
   scene = new THREE.Scene()\r
-  scene.background = new THREE.Color('#999999')\r
+  scene.background = new THREE.Color('#999')\r
 \r
   // 把摄像机放到自拍杆上 (把它添加为一个对象的子元素)\r
   // 如此，我们就能通过旋转自拍杆，来移动摄像机\r
@@ -390,6 +390,9 @@ function main() {\r
   scene.add(cameraPole)\r
   cameraPole.add(camera)\r
   {\r
+    // 添加环境光源\r
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5) // 灯光颜色和强度\r
+    scene.add(ambientLight) // 将灯光添加到场景中\r
     const light = new THREE.DirectionalLight(0xffffff, 3)\r
     light.position.set(-1, 2, 4)\r
     scene.add(light)\r

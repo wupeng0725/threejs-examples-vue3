@@ -17,7 +17,7 @@ import { withBase } from '@/utils'\r
 const canvasRef = ref(null)\r
 \r
 let renderer = null, camera = null, scene = null, animationId = null,\r
-  controls = null, gui = null\r
+  controls = null\r
 \r
 \r
 function main() {\r
@@ -116,14 +116,13 @@ const cleanUp = () => {\r
   if (animationId) cancelAnimationFrame(animationId)\r
 \r
   // 2. 释放Three.js资源\r
-  resTracker.dispose() // 释放资源\r
-  // scene.traverse(child => {\r
-  //   if (child.isMesh) {\r
-  //     child.geometry.dispose()\r
-  //     child.material.dispose()\r
-  //     // texture.dispose()   // 释放纹理（如果有）\r
-  //   }\r
-  // })\r
+  scene.traverse(child => {\r
+    if (child.isMesh) {\r
+      child.geometry.dispose()\r
+      child.material.dispose()\r
+      // texture.dispose()   // 释放纹理（如果有）\r
+    }\r
+  })\r
 \r
   // 3. 销毁渲染器\r
   renderer.dispose()\r
@@ -134,8 +133,6 @@ const cleanUp = () => {\r
   // 4. 销毁GUI和控制器\r
   controls.dispose() // 释放控制器资源\r
   controls = null\r
-  gui.destroy() // 销毁GUI实例\r
-  gui = null\r
 \r
   // 4. 清理引用\r
   scene = null\r
