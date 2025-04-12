@@ -38,7 +38,7 @@ const initScene = () => {
   // 设置相机看向位置（默认原点）
   camera.lookAt(0, 0, 0)
   // 创建渲染器
-  renderer = new THREE.WebGLRenderer()
+  renderer = new THREE.WebGLRenderer({ antialias: true })
   // 设置渲染器的尺寸
   renderer.setSize(containerRef.value.clientWidth, containerRef.value.clientHeight)
   // 开启场景中的阴影贴图

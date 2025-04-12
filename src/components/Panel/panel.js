@@ -35,6 +35,11 @@ export const panelList = [
     type: 'demo'
   },
   {
+    title: '离屏渲染',
+    value: 'OffscreenCanvas',
+    type: 'demo'
+  },
+  {
     title: '点光源',
     value: 'PointLight',
     type: 'demo'
@@ -42,6 +47,16 @@ export const panelList = [
   {
     title: '聚光灯',
     value: 'SpotLight',
+    type: 'demo'
+  },
+  {
+    title: 'Tween动画',
+    value: 'TweenBox',
+    type: 'demo'
+  },
+  {
+    title: '包围盒与包围球',
+    value: 'BoundingBox',
     type: 'demo'
   },
   {

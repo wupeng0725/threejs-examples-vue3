@@ -79,13 +79,6 @@ function main() {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 3) // 灯光颜色和强度
     directionalLight.position.set(-1, 2, 5) // 灯光位置
     scene.add(directionalLight) // 将灯光添加到场景中
-
-    // 创建纹理加载器
-    // const textureLoader = new THREE.TextureLoader()
-    // 加载纹理图片
-    // const texture = track(textureLoader.load(withBase('/texture/door/color.jpg')))
-    // const texture = track(getTexture('/texture/door/color.jpg'))
-
   }
 }
 
@@ -109,7 +102,6 @@ function resizeRendererToDisplaySize(renderer) {
   }
   return needResize
 }
-// 清理资源
 // 清理资源
 const cleanUp = () => {
   // 1. 停止动画循环

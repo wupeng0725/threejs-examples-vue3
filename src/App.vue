@@ -30,6 +30,9 @@ const GUI = defineAsyncComponent(() => import('./views/GUI.vue'))
 const Texture = defineAsyncComponent(() => import('./views/Texture.vue'))
 const GltfLoaderBox = defineAsyncComponent(() => import('./views/GltfLoaderBox.vue'))
 const RaycasterBox = defineAsyncComponent(() => import('./views/RaycasterBox.vue'))
+const OffscreenCanvas = defineAsyncComponent(() => import('./views/OffscreenCanvas.vue'))
+const TweenBox = defineAsyncComponent(() => import('./views/TweenBox.vue'))
+const BoundingBox = defineAsyncComponent(() => import('./views/BoundingBox.vue'))
 
 import { getComponentCode } from '@/utils'
 import { preloadTextures } from '@/utils/textureLoader'
@@ -58,7 +61,10 @@ const components = {
 	GUI,
 	Texture,
 	GltfLoaderBox,
-	RaycasterBox
+	RaycasterBox,
+	OffscreenCanvas,
+	TweenBox,
+	BoundingBox
 }
 
 const currentComponent = ref('')

@@ -8,7 +8,8 @@
     </div>
     <div class="panel-item" :class="item.value === currentPanel && 'selected'" v-for="(item, index) in panelList"
       :key="item.value" @click="onClickPanel(item)">
-      {{ index + 1 }} - {{ item.title }}
+      <div class="panel-item-context">{{ index + 1 }} - {{ item.title }}</div>
+      <div class="panel-item-tag" v-show="item.type === 'link'">3D案例</div>
     </div>
     <!-- 收起/展开 -->
     <!-- <div class="panel-tool" @click="onToggle"><</div> -->
@@ -84,6 +85,9 @@ a {
   padding: 10px 20px;
   border-bottom: 1px solid #ccc;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   &:hover {
     @include panel-item;
@@ -91,6 +95,9 @@ a {
 
   &.selected {
     @include panel-item;
+  }
+  .panel-item-tag {
+    color: aqua;
   }
 }
 

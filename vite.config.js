@@ -9,6 +9,9 @@ export default defineConfig({
     vue(),
     visualizer({ open: true }),
   ],
+  worker: {
+    format: 'es',
+  },
   base: process.env.NODE_ENV === 'production' ? '/threejs-examples-vue3/' : '/',
   resolve: {
     alias: {
