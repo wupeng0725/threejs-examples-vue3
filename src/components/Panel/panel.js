@@ -63,5 +63,10 @@ export const panelList = [
     title: '3D圣诞贺卡',
     value: 'christmas-card',
     type: 'link'
+  },
+  {
+    title: '3D汽车展示与选配',
+    value: 'threejs-auto-show',
+    type: 'link'
   }
 ]
