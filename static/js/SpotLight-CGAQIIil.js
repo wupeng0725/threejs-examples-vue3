@@ -154,212 +154,22 @@ onBeforeUnmount(() => {\r
 })\r
 <\/script>\r
 \r
-<style lang="scss" scoped></style>`,i=Object.freeze(Object.defineProperty({__proto__:null,default:n},Symbol.toStringTag,{value:"Module"})),e=`<template>\r
-  <div id="container" ref="containerRef"></div>\r
-</template>\r
-\r
-<script setup>\r
-import { onBeforeUnmount, onMounted, ref } from 'vue'\r
-// 导入threejs\r
-import * as THREE from 'three'\r
-// 导入轨道控制器\r
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'\r
-// 导入lil.gui\r
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'\r
-\r
-const containerRef = ref(null)\r
-\r
-let renderer, scene, camera, animationId, gui\r
-\r
-const initScene = () => {\r
-  /**\r
-   * 目标：点光源\r
-   */\r
-\r
-  // 创建场景\r
-  scene = new THREE.Scene()\r
-\r
-  // 创建相机\r
-  camera = new THREE.PerspectiveCamera(\r
-    45, // fov视角范围(field 0f view)\r
-    window.innerWidth / window.innerHeight, // aspect画布宽高比，默认是300/150=2\r
-    0.1, // near近平面\r
-    1000 // far远平面\r
-  )\r
-  // 设置相机位置\r
-  camera.position.z = 10\r
-  camera.position.y = 2\r
-  camera.position.x = 2\r
-  // camera.position.set(0, 0, 10)\r
-  // 设置相机看向位置（默认原点）\r
-  camera.lookAt(0, 0, 0)\r
-\r
-  // 创建渲染器\r
-  renderer = new THREE.WebGLRenderer()\r
-  // 设置渲染器的尺寸\r
-  renderer.setSize(containerRef.value.clientWidth, containerRef.value.clientHeight)\r
-  // 开启场景中的阴影贴图\r
-  renderer.shadowMap.enabled = true\r
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap // 柔和阴影\r
-\r
-  // 将画布添加到body中\r
-  containerRef.value.appendChild(renderer.domElement)\r
-\r
-  // 添加世界坐标辅助器\r
-  const axeshelper = new THREE.AxesHelper(5)\r
-  scene.add(axeshelper)\r
-\r
-  // 添加轨道控制器\r
-  const controls = new OrbitControls(camera, renderer.domElement)\r
-\r
-  // 设置时钟\r
-  const clock = new THREE.Clock()\r
-\r
-  // 创建GUI\r
-  gui = new GUI()\r
-\r
-  // 创建球形几何体\r
-  const sphereGeometry = new THREE.SphereGeometry(1, 20, 20)\r
-  const material = new THREE.MeshStandardMaterial()\r
-  const sphere = new THREE.Mesh(sphereGeometry, material)\r
-  // 投射阴影\r
-  sphere.castShadow = true\r
-  scene.add(sphere)\r
-\r
-  // 创建平面\r
-  const planeGeometry = new THREE.PlaneGeometry(50, 50)\r
-  const plane = new THREE.Mesh(planeGeometry, material)\r
-  plane.position.set(0, -1, 0)\r
-  plane.rotation.x = -Math.PI / 2\r
-  // 接收阴影\r
-  plane.receiveShadow = true\r
-  scene.add(plane)\r
-\r
-  // 灯光\r
-  // 环境光\r
-  const light = new THREE.AmbientLight(0xffffff, 0.5) // 柔和的白光\r
-  scene.add(light)\r
-\r
-  // 创建一个小球代替点光源\r
-  const smallBall = new THREE.Mesh(\r
-    new THREE.SphereGeometry(0.1, 20, 20),\r
-    new THREE.MeshBasicMaterial({ color: 0xff0000 })\r
-  )\r
-  smallBall.position.set(2, 2, 2)\r
-\r
-  // 点光源\r
-  const pointLight = new THREE.PointLight(0xff0000, 0.5)\r
-  // pointLight.position.set(2, 2, 2)\r
-  pointLight.castShadow = true\r
-  // 光照强度\r
-  pointLight.intensity = 2\r
-\r
-  // 设置阴影模糊度\r
-  pointLight.shadow.radius = 20\r
-  // 设置阴影的分辨率\r
-  pointLight.shadow.mapSize.set(1024, 1024)\r
-\r
-  // 设置透视相机的属性\r
-  // pointLight.shadow.camera.near = 1\r
-  // pointLight.shadow.camera.far = 1000\r
-  // pointLight.shadow.camera.fov = 15\r
-\r
-  // 沿着光照距离的衰减量\r
-  pointLight.decay = 0\r
-\r
-  smallBall.add(pointLight)\r
-  scene.add(smallBall)\r
-\r
-  gui.add(sphere.position, "x").min(-5).max(5).step(0.1)\r
-  gui.add(pointLight, "distance").min(0).max(10).step(0.01)\r
-  gui.add(pointLight, "decay").min(0).max(5).step(0.01)\r
-\r
-  // const shadowHelper = new THREE.CameraHelper(pointLight.shadow.camera)\r
-  // scene.add(shadowHelper);\r
-  function animate() {\r
-    let time = clock.getElapsedTime()\r
-    smallBall.position.x = Math.sin(time) * 3\r
-    smallBall.position.z = Math.cos(time) * 3\r
-    smallBall.position.y = 2 + Math.sin(time * 10) / 2\r
-\r
-    controls.update()\r
-    // 渲染\r
-    renderer.render(scene, camera)\r
-    animationId = requestAnimationFrame(animate)\r
-  }\r
-  animate()\r
-}\r
-\r
-// 窗口resize处理\r
-const handleResize = () => {\r
-  // 重置渲染器高度比\r
-  renderer.setSize(containerRef.value.clientWidth, containerRef.value.clientHeight)\r
-  // 重置相机宽高比\r
-  camera.aspect = window.innerWidth / window.innerHeight\r
-  // 更新相机投影矩阵\r
-  camera.updateProjectionMatrix()\r
-}\r
-\r
-// 清理资源\r
-const cleanUp = () => {\r
-  containerRef.value.removeChild(renderer.domElement)\r
-  gui.destroy() // 销毁GUI实例\r
-  // 1. 停止动画循环\r
-  if (animationId) cancelAnimationFrame(animationId)\r
-\r
-  // 2. 移除事件监听\r
-  window.removeEventListener('resize', handleResize)\r
-\r
-  // 3. 释放Three.js资源\r
-  scene.traverse(child => {\r
-    if (child.isMesh) {\r
-      child.geometry.dispose()\r
-      child.material.dispose()\r
-      // texture.dispose()   // 释放纹理（如果有）\r
-    }\r
-  })\r
-\r
-  // 4. 销毁渲染器\r
-  renderer.dispose()\r
-  renderer.forceContextLoss()\r
-  renderer.domElement = null\r
-  renderer = null\r
-\r
-  // 5. 清理引用\r
-  scene = null\r
-  camera = null\r
-  gui = null\r
-}\r
-\r
-onMounted(() => {\r
-  initScene()\r
-  window.addEventListener('resize', handleResize)\r
-})\r
-\r
-\r
-\r
-onBeforeUnmount(() => {\r
-  cleanUp()\r
-})\r
-\r
-<\/script>\r
-\r
-<style>\r
-</style>`,a=Object.freeze(Object.defineProperty({__proto__:null,default:e},Symbol.toStringTag,{value:"Module"})),r=`<template>\r
+<style lang="scss" scoped></style>`,t=Object.freeze(Object.defineProperty({__proto__:null,default:n},Symbol.toStringTag,{value:"Module"})),r=`<template>\r
   <canvas ref="canvasRef"></canvas>\r
 </template>\r
 \r
 <script setup>\r
 // 引入threejs\r
 import * as THREE from 'three'\r
-// 导入轨道控制器\r
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'\r
 import { onBeforeUnmount, onMounted, ref } from 'vue'\r
+import { FontLoader } from 'three/addons/loaders/FontLoader.js'\r
+import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'\r
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'\r
+import { withBase } from '@/utils'\r
 \r
 const canvasRef = ref(null)\r
 \r
-let renderer = null, camera = null, scene = null, animationId = null, cubes = [],\r
-  controls = null, cameraPole = null\r
+let renderer = null, camera = null, scene = null, animationId = null, objects = []\r
 \r
 function main() {\r
   // 创建渲染器\r
@@ -370,7 +180,7 @@ function main() {\r
   })\r
 \r
   // 创建透视相机，近大远小\r
-  const fov = 75 // fov是视野范围(field of view)的缩写，默认值50\r
+  const fov = 40 // fov是视野范围(field of view)的缩写，默认值50\r
   const aspect = window.innerWidth / window.innerHeight  // aspect指画布的宽高比，默认值1\r
   // near和far代表近平面和远平面，它们限制了摄像机面朝方向的可绘区域。 任何距离小于或超过这个范围的物体都将被裁剪掉(不绘制)。\r
   const near = 0.1 // 默认值0.1\r
@@ -378,111 +188,342 @@ function main() {\r
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far)\r
   // 摄像机默认指向Z轴负方向，上方向朝向Y轴正方向。\r
   // 我们将会把立方体放置在坐标原点，所以我们需要往后移一下摄像机才能显示出物体。\r
-  camera.position.z = 30\r
+  camera.position.z = 120\r
 \r
   // 创建场景，需要three.js绘制的东西都需要加入到scene中\r
   scene = new THREE.Scene()\r
-  scene.background = new THREE.Color('#999')\r
+  // 设置创建的背景--略浅的灰色\r
+  scene.background = new THREE.Color(0xaaaaaa)\r
 \r
-  // 把摄像机放到自拍杆上 (把它添加为一个对象的子元素)\r
-  // 如此，我们就能通过旋转自拍杆，来移动摄像机\r
-  cameraPole = new THREE.Object3D()\r
-  scene.add(cameraPole)\r
-  cameraPole.add(camera)\r
+  // 效果好了一些但还是很难看出是三维的。我们来添加些光照效果\r
+  // 先创建一盏平行光\r
   {\r
-    // 添加环境光源\r
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5) // 灯光颜色和强度\r
-    scene.add(ambientLight) // 将灯光添加到场景中\r
     const light = new THREE.DirectionalLight(0xffffff, 3)\r
     light.position.set(-1, 2, 4)\r
     scene.add(light)\r
   }\r
-  {\r
-    // 添加轨道控制器\r
-    controls = new OrbitControls(camera, renderer.domElement)\r
-    controls.enableDamping = true // 启用阻尼（惯性）效果\r
+\r
+  const spread = 15\r
+\r
+  function addObject(x, y, obj) {\r
+    obj.position.x = x * spread\r
+    obj.position.y = y * spread\r
+\r
+    scene.add(obj)\r
+    objects.push(obj)\r
   }\r
 \r
-  // 生成100个立方体，每个立方体的颜色，位置，朝向，缩放都随机。\r
-  const geometry = new THREE.BoxGeometry(1, 1, 1)\r
-\r
-  function rand(min, max) {\r
-    if (max === undefined) {\r
-      max = min\r
-      min = 0\r
-    }\r
-    return min + (max - min) * Math.random()\r
-  }\r
-\r
-  function randomColor() {\r
-    return \`hsl(\${rand(360) | 0}, \${rand(50, 100) | 0}%, 50%)\`\r
-  }\r
-\r
-  const numObjects = 100\r
-  for (let i = 0; i < numObjects; ++i) {\r
+  function createMaterial() {\r
     const material = new THREE.MeshPhongMaterial({\r
-      color: randomColor(),\r
+      side: THREE.DoubleSide,\r
     })\r
 \r
-    const cube = new THREE.Mesh(geometry, material)\r
-    scene.add(cube)\r
+    const hue = Math.random()\r
+    const saturation = 1\r
+    const luminance = .5\r
+    material.color.setHSL(hue, saturation, luminance)\r
 \r
-    cube.position.set(rand(-20, 20), rand(-20, 20), rand(-20, 20))\r
-    cube.rotation.set(rand(Math.PI), rand(Math.PI), 0)\r
-    cube.scale.set(rand(3, 6), rand(3, 6), rand(3, 6))\r
+    return material\r
   }\r
 \r
-}\r
-class PickHelper {\r
-  constructor() {\r
-    this.raycaster = new THREE.Raycaster()\r
-    this.pickedObject = null\r
-    this.pickedObjectSavedColor = 0\r
+  function addSolidGeometry(x, y, geometry) {\r
+    const mesh = new THREE.Mesh(geometry, createMaterial())\r
+    addObject(x, y, mesh)\r
   }\r
-  pick(normalizedPosition, scene, camera, time) {\r
-    // 恢复上一个被拾取对象的颜色\r
-    if (this.pickedObject) {\r
-      this.pickedObject.material.emissive.setHex(this.pickedObjectSavedColor)\r
-      this.pickedObject = undefined\r
+  function addLineGeometry(x, y, geometry) {\r
+    const material = new THREE.LineBasicMaterial({ color: 0x000000 })\r
+    const mesh = new THREE.LineSegments(geometry, material)\r
+    addObject(x, y, mesh)\r
+\r
+  }\r
+\r
+  {\r
+    // 立方体\r
+    const width = 8\r
+    const height = 8\r
+    const depth = 8\r
+    addSolidGeometry(-2, 2, new THREE.BoxGeometry(width, height, depth))\r
+  }\r
+  {\r
+    // 圆形\r
+    const radius = 7\r
+    const segments = 24\r
+    addSolidGeometry(- 1, 2, new THREE.CircleGeometry(radius, segments))\r
+  }\r
+  {\r
+    // 圆锥体\r
+    const radius = 6\r
+    const height = 8\r
+    const segments = 16\r
+    addSolidGeometry(0, 2, new THREE.ConeGeometry(radius, height, segments))\r
+  }\r
+  {\r
+    // 圆柱\r
+    const radiusTop = 4\r
+    const radiusBottom = 4\r
+    const height = 8\r
+    const radialSegments = 12\r
+    addSolidGeometry(1, 2, new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments))\r
+  }\r
+  {\r
+    // 12面体\r
+    const radius = 7\r
+    addSolidGeometry(2, 2, new THREE.DodecahedronGeometry(radius))\r
+  }\r
+  {\r
+    // 挤压几何体\r
+    const shape = new THREE.Shape()\r
+    const x = - 2.5\r
+    const y = - 5\r
+    shape.moveTo(x + 2.5, y + 2.5)\r
+    shape.bezierCurveTo(x + 2.5, y + 2.5, x + 2, y, x, y)\r
+    shape.bezierCurveTo(x - 3, y, x - 3, y + 3.5, x - 3, y + 3.5)\r
+    shape.bezierCurveTo(x - 3, y + 5.5, x - 1.5, y + 7.7, x + 2.5, y + 9.5)\r
+    shape.bezierCurveTo(x + 6, y + 7.7, x + 8, y + 4.5, x + 8, y + 3.5)\r
+    shape.bezierCurveTo(x + 8, y + 3.5, x + 8, y, x + 5, y)\r
+    shape.bezierCurveTo(x + 3.5, y, x + 2.5, y + 2.5, x + 2.5, y + 2.5)\r
+\r
+    const extrudeSettings = {\r
+      steps: 2,\r
+      depth: 2,\r
+      bevelEnabled: true,\r
+      bevelThickness: 1,\r
+      bevelSize: 1,\r
+      bevelSegments: 2,\r
     }\r
 \r
-    // 发出射线\r
-    this.raycaster.setFromCamera(normalizedPosition, camera)\r
-    // 获取与射线相交的对象\r
-    const intersectedObjects = this.raycaster.intersectObjects(scene.children)\r
-    if (intersectedObjects.length) {\r
-      // 找到第一个对象，它是离鼠标最近的对象\r
-      this.pickedObject = intersectedObjects[0].object\r
-      // 保存它的颜色\r
-      this.pickedObjectSavedColor = this.pickedObject.material.emissive.getHex()\r
-      // 设置它的发光为 黄色/红色闪烁\r
-      this.pickedObject.material.emissive.setHex((time * 8) % 2 > 1 ? 0xFFFF00 : 0xFF0000)\r
+    addSolidGeometry(- 2, 1, new THREE.ExtrudeGeometry(shape, extrudeSettings))\r
+  }\r
+  {\r
+    // 20面体\r
+    const radius = 7\r
+    addSolidGeometry(- 1, 1, new THREE.IcosahedronGeometry(radius))\r
+\r
+  }\r
+  {\r
+    // 车削几何体\r
+    const points = []\r
+    for (let i = 0; i < 10; ++i) {\r
+\r
+      points.push(new THREE.Vector2(Math.sin(i * 0.2) * 3 + 3, (i - 5) * .8))\r
+\r
     }\r
-  }\r
-}\r
-const pickHelper = new PickHelper()\r
-function getCanvasRelativePosition(event) {\r
-  const rect = canvasRef.value.getBoundingClientRect()\r
-  return {\r
-    x: (event.clientX - rect.left) * canvasRef.value.width / rect.width,\r
-    y: (event.clientY - rect.top) * canvasRef.value.height / rect.height,\r
-  }\r
-}\r
 \r
-const pickPosition = { x: 0, y: 0 }\r
-clearPickPosition()\r
-function setPickPosition(event) {\r
-  const pos = getCanvasRelativePosition(event)\r
-  pickPosition.x = (pos.x / canvasRef.value.width) * 2 - 1\r
-  pickPosition.y = (pos.y / canvasRef.value.height) * -2 + 1  // note we flip Y\r
-}\r
+    addSolidGeometry(0, 1, new THREE.LatheGeometry(points))\r
+  }\r
+  {\r
+    // 八面体\r
+    const radius = 7\r
+    addSolidGeometry(1, 1, new THREE.OctahedronGeometry(radius))\r
+  }\r
+  {\r
+    // 参数化几何体\r
+    function klein(v, u, target) {\r
 \r
-function clearPickPosition() {\r
-  // 对于触屏，不像鼠标总是能有一个位置坐标，\r
-  // 如果用户不在触摸屏幕，我们希望停止拾取操作。\r
-  // 因此，我们选取一个特别的值，表明什么都没选中\r
-  pickPosition.x = -100000\r
-  pickPosition.y = -100000\r
+      u *= Math.PI\r
+      v *= 2 * Math.PI\r
+      u = u * 2\r
+\r
+      let x\r
+      let z\r
+\r
+      if (u < Math.PI) {\r
+\r
+        x = 3 * Math.cos(u) * (1 + Math.sin(u)) + (2 * (1 - Math.cos(u) / 2)) * Math.cos(u) * Math.cos(v)\r
+        z = - 8 * Math.sin(u) - 2 * (1 - Math.cos(u) / 2) * Math.sin(u) * Math.cos(v)\r
+\r
+      } else {\r
+\r
+        x = 3 * Math.cos(u) * (1 + Math.sin(u)) + (2 * (1 - Math.cos(u) / 2)) * Math.cos(v + Math.PI)\r
+        z = - 8 * Math.sin(u)\r
+\r
+      }\r
+\r
+      const y = - 2 * (1 - Math.cos(u) / 2) * Math.sin(v)\r
+\r
+      target.set(x, y, z).multiplyScalar(0.75)\r
+\r
+    }\r
+\r
+    const slices = 25\r
+    const stacks = 25\r
+    addSolidGeometry(2, 1, new ParametricGeometry(klein, slices, stacks))\r
+  }\r
+  {\r
+    // 平面\r
+    const width = 9\r
+    const height = 9\r
+    const widthSegments = 2\r
+    const heightSegments = 2\r
+    addSolidGeometry(- 2, 0, new THREE.PlaneGeometry(width, height, widthSegments, heightSegments))\r
+  }\r
+  {\r
+    // 多面几何体\r
+    const verticesOfCube = [\r
+      - 1, - 1, - 1, 1, - 1, - 1, 1, 1, - 1, - 1, 1, - 1,\r
+      - 1, - 1, 1, 1, - 1, 1, 1, 1, 1, - 1, 1, 1,\r
+    ]\r
+    const indicesOfFaces = [\r
+      2, 1, 0, 0, 3, 2,\r
+      0, 4, 7, 7, 3, 0,\r
+      0, 1, 5, 5, 4, 0,\r
+      1, 2, 6, 6, 5, 1,\r
+      2, 3, 7, 7, 6, 2,\r
+      4, 5, 6, 6, 7, 4,\r
+    ]\r
+    const radius = 7\r
+    const detail = 2\r
+    addSolidGeometry(- 1, 0, new THREE.PolyhedronGeometry(verticesOfCube, indicesOfFaces, radius, detail))\r
+  }\r
+  {\r
+    // 圆环\r
+    const innerRadius = 2\r
+    const outerRadius = 7\r
+    const segments = 18\r
+    addSolidGeometry(0, 0, new THREE.RingGeometry(innerRadius, outerRadius, segments))\r
+  }\r
+  {\r
+    // 形状--爱心\r
+    const shape = new THREE.Shape()\r
+    const x = - 2.5\r
+    const y = - 5\r
+    shape.moveTo(x + 2.5, y + 2.5)\r
+    shape.bezierCurveTo(x + 2.5, y + 2.5, x + 2, y, x, y)\r
+    shape.bezierCurveTo(x - 3, y, x - 3, y + 3.5, x - 3, y + 3.5)\r
+    shape.bezierCurveTo(x - 3, y + 5.5, x - 1.5, y + 7.7, x + 2.5, y + 9.5)\r
+    shape.bezierCurveTo(x + 6, y + 7.7, x + 8, y + 4.5, x + 8, y + 3.5)\r
+    shape.bezierCurveTo(x + 8, y + 3.5, x + 8, y, x + 5, y)\r
+    shape.bezierCurveTo(x + 3.5, y, x + 2.5, y + 2.5, x + 2.5, y + 2.5)\r
+    addSolidGeometry(1, 0, new THREE.ShapeGeometry(shape))\r
+  }\r
+  {\r
+    // 球\r
+    const radius = 7\r
+    const widthSegments = 32\r
+    const heightSegments = 16\r
+    addSolidGeometry(2, 0, new THREE.SphereGeometry(radius, widthSegments, heightSegments))\r
+  }\r
+  {\r
+    // 四面体\r
+    const radius = 7\r
+    addSolidGeometry(- 2, - 1, new THREE.TetrahedronGeometry(radius))\r
+  }\r
+  {\r
+    // 文本几何体\r
+    const loader = new FontLoader()\r
+    // promisify font loading\r
+    function loadFont(url) {\r
+\r
+      return new Promise((resolve, reject) => {\r
+\r
+        loader.load(url, resolve, undefined, reject)\r
+\r
+      })\r
+\r
+    }\r
+\r
+    async function doit() {\r
+\r
+      const font = await loadFont(withBase('/fonts/helvetiker_regular.typeface.json'))\r
+      const geometry = new TextGeometry('three.js', {\r
+        font: font,\r
+        size: 3.0,\r
+        depth: .2,\r
+        curveSegments: 12,\r
+        bevelEnabled: true,\r
+        bevelThickness: 0.15,\r
+        bevelSize: .3,\r
+        bevelSegments: 5,\r
+      })\r
+      const mesh = new THREE.Mesh(geometry, createMaterial())\r
+      geometry.computeBoundingBox()\r
+      geometry.boundingBox.getCenter(mesh.position).multiplyScalar(- 1)\r
+\r
+      const parent = new THREE.Object3D()\r
+      parent.add(mesh)\r
+\r
+      addObject(- 1, - 1, parent)\r
+\r
+    }\r
+\r
+    doit()\r
+\r
+  }\r
+  {\r
+    // 圆环几何体\r
+    const radius = 5\r
+    const tubeRadius = 2\r
+    const radialSegments = 8\r
+    const tubularSegments = 24\r
+    addSolidGeometry(0, - 1, new THREE.TorusGeometry(radius, tubeRadius, radialSegments, tubularSegments))\r
+\r
+  }\r
+  {\r
+    // 圆环扭结几何体\r
+    const radius = 3.5\r
+    const tube = 1.5\r
+    const radialSegments = 8\r
+    const tubularSegments = 64\r
+    const p = 2\r
+    const q = 3\r
+    addSolidGeometry(1, - 1, new THREE.TorusKnotGeometry(radius, tube, tubularSegments, radialSegments, p, q))\r
+  }\r
+  {\r
+    // 管道\r
+    class CustomSinCurve extends THREE.Curve {\r
+\r
+      constructor(scale) {\r
+\r
+        super()\r
+        this.scale = scale\r
+\r
+      }\r
+      getPoint(t) {\r
+\r
+        const tx = t * 3 - 1.5\r
+        const ty = Math.sin(2 * Math.PI * t)\r
+        const tz = 0\r
+        return new THREE.Vector3(tx, ty, tz).multiplyScalar(this.scale)\r
+\r
+      }\r
+    }\r
+\r
+    const path = new CustomSinCurve(4)\r
+    const tubularSegments = 20\r
+    const radius = 1\r
+    const radialSegments = 8\r
+    const closed = false\r
+    addSolidGeometry(2, - 1, new THREE.TubeGeometry(path, tubularSegments, radius, radialSegments, closed))\r
+  }\r
+  {\r
+    // 边缘几何体\r
+    const width = 8\r
+    const height = 8\r
+    const depth = 8\r
+    const thresholdAngle = 1\r
+    addLineGeometry(- 1, - 2, new THREE.EdgesGeometry(new THREE.BoxGeometry(width, height, depth), thresholdAngle))\r
+  }\r
+  {\r
+    // 线框几何体\r
+    const width = 8\r
+    const height = 8\r
+    const depth = 8\r
+    addLineGeometry(1, - 2, new THREE.WireframeGeometry(new THREE.BoxGeometry(width, height, depth)))\r
+  }\r
+  {\r
+    // 点材质\r
+    const radius = 7\r
+    const widthSegments = 12\r
+    const heightSegments = 8\r
+    const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments)\r
+    const material = new THREE.PointsMaterial({\r
+      color: 'red',\r
+      size: 3,     // in world units\r
+      sizeAttenuation: false // 指定点的大小是否因相机深度而衰减。\r
+    })\r
+    const points = new THREE.Points(geometry, material)\r
+    addObject(0, -2, points)\r
+  }\r
 }\r
 \r
 /**\r
@@ -492,13 +533,13 @@ function clearPickPosition() {\r
 function resizeRendererToDisplaySize(renderer) {\r
   const canvas = renderer.domElement\r
   // 不处理分辨率\r
-  const width = canvas.clientWidth\r
-  const height = canvas.clientHeight\r
+  // const width = canvas.clientWidth\r
+  // const height = canvas.clientHeight\r
   // \r
   // 处理分辨率显示--应对HD-DPI显示器\r
-  // const pixelRatio = window.devicePixelRatio\r
-  // const width = Math.floor(canvas.clientWidth * pixelRatio)\r
-  // const height = Math.floor(canvas.clientHeight * pixelRatio)\r
+  const pixelRatio = window.devicePixelRatio\r
+  const width = Math.floor(canvas.clientWidth * pixelRatio)\r
+  const height = Math.floor(canvas.clientHeight * pixelRatio)\r
   const needResize = canvas.width !== width || canvas.height !== height\r
   if (needResize) {\r
     renderer.setSize(width, height, false)\r
@@ -509,9 +550,15 @@ function resizeRendererToDisplaySize(renderer) {\r
 function animate(time) {\r
   time *= 0.001 // 将时间单位变为秒\r
 \r
-  cameraPole.rotation.y = time * .1\r
+  objects.forEach((obj, ndx) => {\r
 \r
-  pickHelper.pick(pickPosition, scene, camera, time)\r
+    const speed = .1 + ndx * .05\r
+    const rot = time * speed\r
+    obj.rotation.x = rot\r
+    obj.rotation.y = rot\r
+\r
+  })\r
+\r
   if (resizeRendererToDisplaySize(renderer)) {\r
     const canvas = renderer.domElement\r
     camera.aspect = canvas.clientWidth / canvas.clientHeight\r
@@ -522,13 +569,15 @@ function animate(time) {\r
   animationId = requestAnimationFrame(animate)\r
 }\r
 \r
-\r
 // 清理资源\r
 const cleanUp = () => {\r
   // 1. 停止动画循环\r
   if (animationId) cancelAnimationFrame(animationId)\r
 \r
   // 2. 释放Three.js资源\r
+  for (const cube of objects) {\r
+    scene.remove(cube)\r
+  }\r
   scene.traverse(child => {\r
     if (child.isMesh) {\r
       child.geometry.dispose()\r
@@ -546,28 +595,21 @@ const cleanUp = () => {\r
   // 4. 清理引用\r
   scene = null\r
   camera = null\r
-  cameraPole = null\r
+  objects = []\r
   canvasRef.value = null\r
 }\r
 \r
 onMounted(() => {\r
   main()\r
   requestAnimationFrame(animate)\r
-\r
-  window.addEventListener('mousemove', setPickPosition)\r
-  window.addEventListener('mouseout', clearPickPosition)\r
-  window.addEventListener('mouseleave', clearPickPosition)\r
 })\r
 \r
 onBeforeUnmount(() => {\r
   cleanUp()\r
-  window.removeEventListener('mousemove', setPickPosition)\r
-  window.removeEventListener('mouseout', clearPickPosition)\r
-  window.removeEventListener('mouseleave', clearPickPosition)\r
 })\r
 <\/script>\r
 \r
-<style lang="scss" scoped></style>`,o=Object.freeze(Object.defineProperty({__proto__:null,default:r},Symbol.toStringTag,{value:"Module"})),t=`<template>\r
+<style lang="scss" scoped></style>`,o=Object.freeze(Object.defineProperty({__proto__:null,default:r},Symbol.toStringTag,{value:"Module"})),e=`<template>\r
   <div id="container" ref="containerRef"></div>\r
 </template>\r
 \r
@@ -607,7 +649,7 @@ const initScene = () => {\r
   // 设置相机看向位置（默认原点）\r
   camera.lookAt(0, 0, 0)\r
   // 创建渲染器\r
-  renderer = new THREE.WebGLRenderer()\r
+  renderer = new THREE.WebGLRenderer({ antialias: true })\r
   // 设置渲染器的尺寸\r
   renderer.setSize(containerRef.value.clientWidth, containerRef.value.clientHeight)\r
   // 开启场景中的阴影贴图\r
@@ -754,4 +796,4 @@ onBeforeUnmount(() => {\r
 \r
 <\/script>\r
 \r
-<style></style>`,s=Object.freeze(Object.defineProperty({__proto__:null,default:t},Symbol.toStringTag,{value:"Module"}));export{i as G,a as P,o as R,s as S};
+<style></style>`,a=Object.freeze(Object.defineProperty({__proto__:null,default:e},Symbol.toStringTag,{value:"Module"}));export{t as G,o as P,a as S};
